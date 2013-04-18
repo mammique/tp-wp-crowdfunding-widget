@@ -1,0 +1,46 @@
+.tp_gauge {
+    border-radius: 3px;
+    background-color: #ccc;
+    height: 35px;
+}
+
+.tp_mercury {
+    width: 0;
+    height: inherit;
+    background-color: #800;
+    border-radius: 3px 0 0 3px;
+}
+
+.tp_quantities img {
+    cursor: pointer;
+    margin: 1px;
+}
+
+.tp_error { color: #800; }
+.tp_error:before { content: "Error: "; }
+
+.tp_feedback {
+    font-size: 120% !important;
+    font-weight: bold;
+    text-align: center;
+}
+
+.tp_feedback.tp_error {
+    text-align: left;
+}
+
+.tp_feedback small {
+    display: block;
+    text-align: left;
+}
+
+.tp_info {
+    font-size: 120%;
+    font-weight: bold;
+}
+
+.tp_amount_sep:after { content: " / "; }
+
+.tp_deadline { display: block; }
+
+.tp_deadline:before { content: "Until: "; }
