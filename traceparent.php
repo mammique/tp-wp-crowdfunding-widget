@@ -27,7 +27,7 @@ add_action('widgets_init', 'tp_crowdfunding_load_widgets');
 function tp_crowdfunding_load_widgets() {
 
 	register_widget('Traceparent_Crowdfunding_Widget');
-    wp_register_style('tp_crowdfunding_widget_css', WP_PLUGIN_URL . '/tp-crowdfunding-widget/traceparent.css');
+    wp_register_style('tp_crowdfunding_widget_css', WP_PLUGIN_URL . '/tp-wp-crowdfunding-widget/traceparent.css');
     wp_enqueue_style('tp_crowdfunding_widget_css');
 }
 
