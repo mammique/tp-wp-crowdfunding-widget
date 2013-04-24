@@ -82,7 +82,7 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
 
 ?>
 
-<div id="<?php echo $tp_scope ?>">
+<div class="tp_crowdfunding_widget" id="<?php echo $tp_scope ?>">
 
 <?php
 
@@ -254,6 +254,7 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
         <input type="submit" value="<?php echo $pp_button ?>" />
     </form>
 
+    <div class="tp_goodies"></div>
     <div class="tp_quantities"></div>
 
 </div>
@@ -310,13 +311,65 @@ $.getJSON(tp_url + "/value/unit/" + tp_unit + "/",
 
                                           current = sums['results'][0]['quantity'];
 
-                                          $('#' + tp_scope + ' .tp_mercury').width((current/max*100) + '%');
+                                          $('#' + tp_scope + ' .tp_mercury').width((current / max * 100) + '%');
                                           $('#' + tp_scope + ' .tp_current').text(tp_unit_format(tp_unit, current));
                                           $('#' + tp_scope + ' .tp_max').text(tp_unit_format(tp_unit, max));
                                       }
                             );
                         }
               );
+
+              $.getJSON(tp_url + "/metadata/snippet/filter/",
+                        {'assigned_counters': "07c5dece-9d0e-11e2-8260-00163e84330e",
+                         'user': tp_auth_user, 'type_0': 'goody', 'type_1': 'exact',
+                         'mimetype': 'application/json', 'content_nested': ''},
+
+                        function(goodies) {
+
+                            var goodies_q = [];
+                            var goodict   = {};
+
+                            $(goodies['results']).each(function(k, v) {
+
+                                var content = $.parseJSON(v['content']);
+                                var q = parseFloat(content['q_range'][tp_unit['uuid']][0]);
+                                goodies_q.push(q);
+                                goodict[q] = content;
+                            });
+
+                            goodies_q.sort(function(a,b) { return a > b; } );
+                            console.log(goodies_q);
+
+                            $(goodies_q).each(function(k, v) {
+
+                                var goody = goodict[v];
+                                var q_min = goody['q_range'][tp_unit['uuid']][0];
+                                var el    = $('<div class="tp_goody"><strong class="quantity_min">' +
+                                              '</strong><span class="label"></span><p class="desc"></p>' +
+                                              '</div>');
+                                $('.quantity_min', el).text(tp_unit_format(tp_unit, q_min));
+                                $('.label', el).text(goody['label']);
+                                $('.desc', el).text(goody['desc']);
+
+                                el.click(function() {
+
+                                            var form = $('#' + tp_scope + ' form')
+                                            form.append('<input type="hidden" name="amount" value="' + q_min + '" />')
+                                            form.submit();
+                                         }
+                                );
+                                
+                                $('#' + tp_scope + ' .tp_goodies').append(el);
+                            } );
+                        }
+              );
+
+
+
+
+
+
+
           }
 );
 

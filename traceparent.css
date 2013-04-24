@@ -1,3 +1,7 @@
+.tp_crowdfunding_widget > * {
+    margin-bottom: 10px;
+}
+
 .tp_gauge {
     border-radius: 3px;
     background-color: #ccc;
@@ -44,3 +48,21 @@
 .tp_deadline { display: block; }
 
 .tp_deadline:before { content: "Until: "; }
+html[lang="fr-FR"] .tp_deadline:before { content: "Jusqu'au "; }
+
+.tp_goody {
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+.tp_goody .label {
+    float: right;
+}
+
+.tp_goody .desc {
+    padding-top: 5px;
+    margin: 0 !important;
+}
