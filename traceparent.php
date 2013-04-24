@@ -151,6 +151,7 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
                 $request = $tp_client->get('metadata/snippet/filter/');
                 $request->getQuery()->set('slug_0', "paypal_pdt_$pp_id");
                 $request->getQuery()->set('slug_1', 'exact');
+                $request->getQuery()->set('page_size', '0');
                 $metadata_prev = $request->send()->json();
 
                 if($pp_result['receiver_email'] != $pp_email) {
@@ -161,7 +162,7 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
 
                     echo '<p class="tp_feedback tp_error">currency mismatch.</p>';
 
-                } else if($metadata_prev['count']) {
+                } else if(count($metadata_prev)) {
 
                     echo '<p class="tp_feedback tp_error">Transaction already registered.</p>';
                     echo '<script type="text/javascript">document.location="./";</script>';
@@ -174,6 +175,7 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
 
                         $request = $tp_client->get('auth/user/filter/');
                         $request->getQuery()->set('email', $email);
+                        $request->getQuery()->set('page_size', 1);
 
                         $response = $request->send();
                         $data = $response->json();
@@ -228,6 +230,39 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
 
                     echo '<p class="tp_feedback">Thank you!<small>Your participation has been succesfuly registered, '.
                      'please check your email for more details.</small></p>';
+
+                    $request = $tp_client->get("metadata/snippet/filter/");
+                    $request->getQuery()->set('assigned_counters', $tp_counter);
+                    $request->getQuery()->set('user', $tp_auth_user);
+                    $request->getQuery()->set('type_0', 'goody');
+                    $request->getQuery()->set('type_1', 'exact');
+                    $request->getQuery()->set('mimetype', 'application/json');
+                    $request->getQuery()->set('content_nested', '');
+                    $request->getQuery()->set('page_size', 0);
+
+                    $goodies = $request->send()->json();
+                    $goodict = array();
+
+                    for ($i = 0 ; $i < count($goodies) ; $i++) {
+
+                        $goody = $goodies[$i];
+                        $goody['content'] = json_decode($goody['content'], true);
+                        $goodict[$goody['content']['q_range'][$unit['uuid']][0]] = $goody;
+                    }
+
+                    krsort($goodict);
+
+                    foreach($goodict as $q => $goody) {
+
+                        if(floatval($quantity['quantity']) >= floatval($q)) {
+
+                            $goody_uuid = $goody['uuid'];
+                            $tp_client->post("metadata/snippet/$goody_uuid/update/assigned_quantities/add/")
+                                ->addPostFields(array('uuid' => $quantity['uuid']))->send();
+
+                            break;
+                        }
+                    }
                 }
 
             } else { // if (strcmp ($lines[0], "FAIL") == 0) {
@@ -298,18 +333,20 @@ $.getJSON(tp_url + "/value/unit/" + tp_unit + "/",
               $('#' + tp_scope + ' .tp_post').show();
 
               $.getJSON(tp_url + "/monitor/mark/filter/",
-                        {'counters': tp_counter, 'user': tp_auth_user, 'unit': tp_unit['uuid']},
+                        {'counters': tp_counter, 'user': tp_auth_user,
+                         'unit': tp_unit['uuid'], 'page_size': 0},
 
                         function(marks) {
 
-                            max = marks['results'][0]['quantity'];
+                            max = marks[0]['quantity'];
 
                             $.getJSON(tp_url + "/monitor/result/sum/filter/",
-                                      {'counter': tp_counter, 'unit': tp_unit['uuid'], 'status': 'present'},
+                                      {'counter': tp_counter, 'unit': tp_unit['uuid'],
+                                       'status': 'present', 'page_size': 0},
 
                                       function(sums) {
 
-                                          current = sums['results'][0]['quantity'];
+                                          current = sums[0]['quantity'];
 
                                           $('#' + tp_scope + ' .tp_mercury').width((current / max * 100) + '%');
                                           $('#' + tp_scope + ' .tp_current').text(tp_unit_format(tp_unit, current));
@@ -320,16 +357,17 @@ $.getJSON(tp_url + "/value/unit/" + tp_unit + "/",
               );
 
               $.getJSON(tp_url + "/metadata/snippet/filter/",
-                        {'assigned_counters': "07c5dece-9d0e-11e2-8260-00163e84330e",
+                        {'assigned_counters': tp_counter,
                          'user': tp_auth_user, 'type_0': 'goody', 'type_1': 'exact',
-                         'mimetype': 'application/json', 'content_nested': ''},
+                         'mimetype': 'application/json', 'content_nested': '',
+                         'page_size': 0},
 
                         function(goodies) {
 
                             var goodies_q = [];
                             var goodict   = {};
 
-                            $(goodies['results']).each(function(k, v) {
+                            $(goodies).each(function(k, v) {
 
                                 var content = $.parseJSON(v['content']);
                                 var q = parseFloat(content['q_range'][tp_unit['uuid']][0]);
@@ -338,7 +376,6 @@ $.getJSON(tp_url + "/value/unit/" + tp_unit + "/",
                             });
 
                             goodies_q.sort(function(a,b) { return a > b; } );
-                            console.log(goodies_q);
 
                             $(goodies_q).each(function(k, v) {
 
@@ -363,22 +400,15 @@ $.getJSON(tp_url + "/value/unit/" + tp_unit + "/",
                             } );
                         }
               );
-
-
-
-
-
-
-
           }
 );
 
 $.getJSON(tp_url + "/value/quantity/filter/",
-          {'counters': tp_counter, 'status': 'present'},
+          {'counters': tp_counter, 'status': 'present', 'page_size': 0},
 
           function(quantities) {
 
-              $(quantities['results']).each(function(k, q) {
+              $(quantities).each(function(k, q) {
 
                   var img = $('<img src="http://www.gravatar.com/avatar/none?s=32" title="' + tp_unit_format(tp_unit, q['quantity']) + '" />');
 
