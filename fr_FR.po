@@ -102,13 +102,9 @@ msgstr ""
 "traceparent.com/) qui opère le fonctionnement de la jauge de financement "
 "présente sur notre site."
 
-#: traceparent.php:227 traceparent.php:244 traceparent.php:245
-msgid "Your profile information is managed by Gravatar, "
-msgstr ""
-
 #: traceparent.php:227 traceparent.php:241
 msgid ""
 "Your profile information is managed by Gravatar, if you want to set your "
 "avatar up, please set it using this very same email (%1$s) at http://gravatar.com/"
-msgstr "Les informations de votre profil sont gérées par Gravatar, si vous voulez définir votre "
+msgstr "Les informations de votre profil sont gérées par Gravatar, si vous souhaitez définir votre "
 "avatar, veuillez le définir avec ce même email (%1$s) à l'adresse http://gravatar.com/"
