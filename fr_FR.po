@@ -1,0 +1,114 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-04-26 00:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: traceparent.php:49 traceparent.php:50
+msgid ""
+"A crowdfunding widget, displaying a funding gauge integrated with "
+"Traceparent's API and a PayPal a donation button."
+msgstr ""
+
+#: traceparent.php:55 traceparent.php:56
+msgid "Traceparent Crowdfunding"
+msgstr ""
+
+#: traceparent.php:111
+msgid ""
+"Something went wrong, our staff is working on it, sorry for the "
+"inconvenience."
+msgstr ""
+"Un problème est survenu, notre équipe travaille à le résoudre, veuillez nous "
+"excuser pour le dérangement."
+
+#: traceparent.php:162
+msgid "receiver email address mismatch."
+msgstr "incompatibilité de l'adresse du bénéficiaire."
+
+#: traceparent.php:168
+msgid "currency mismatch."
+msgstr "incompatibilité de devise."
+
+#: traceparent.php:174
+msgid "Transaction already registered."
+msgstr "Transaction déjà enregistrée."
+
+#: traceparent.php:239 traceparent.php:245 traceparent.php:248
+#: traceparent.php:249 traceparent.php:250 traceparent.php:254
+#: traceparent.php:252
+msgid "Thank you!"
+msgstr "Merci !"
+
+#: traceparent.php:241 traceparent.php:247 traceparent.php:250
+#: traceparent.php:251 traceparent.php:252 traceparent.php:256
+#: traceparent.php:254
+msgid "Your participation has been succesfuly registered"
+msgstr "Votre participation a bien été enregistrée"
+
+#: traceparent.php:243 traceparent.php:249 traceparent.php:252
+#: traceparent.php:253 traceparent.php:254 traceparent.php:258
+#: traceparent.php:256
+msgid "please check your email for more details."
+msgstr "veuillez consulter votre messagerie pour d'avantage de détails."
+
+#: traceparent.php:487 traceparent.php:493 traceparent.php:496
+#: traceparent.php:497 traceparent.php:498 traceparent.php:502
+#: traceparent.php:500
+msgid "Donate!"
+msgstr "Donner !"
+
+#: traceparent.php:229 traceparent.php:233
+msgid "Thank you for your participation!"
+msgstr "Merci pour votre participation !"
+
+#: traceparent.php:231 traceparent.php:235
+msgid "Hello"
+msgstr "Bonjour"
+
+#: traceparent.php:232 traceparent.php:236
+msgid "thank you for your participation to our project!"
+msgstr "merci de votre participation à notre projet !"
+
+#: traceparent.php:234 traceparent.php:238
+msgid ""
+"You can check information about your payment on your PayPal account at "
+"https://paypal.com/"
+msgstr ""
+"Vous pouvez vérifier les information de votre paiement sur votre compte "
+"PayPal à l'adresse https://paypal.com/"
+
+#: traceparent.php:236 traceparent.php:240
+msgid ""
+"Tracability and transparency about the use of your money is monitored by the "
+"free and Open Source software Traceparent (http://traceparent.com/) that is "
+"running the funding gauge on our website."
+msgstr ""
+"La traçabilité et la transparence au sujet de l'utilisation de votre argent "
+"est suivie par le Logiciel Libre et Open Source Traceparent (http://"
+"traceparent.com/) qui opère le fonctionnement de la jauge de financement "
+"présente sur notre site."
+
+#: traceparent.php:227 traceparent.php:244 traceparent.php:245
+msgid "Your profile information is managed by Gravatar, "
+msgstr ""
+
+#: traceparent.php:227 traceparent.php:241
+msgid ""
+"Your profile information is managed by Gravatar, if you want to set your "
+"avatar up, please set it using this very same email (%1$s) at http://gravatar.com/"
+msgstr "Les informations de votre profil sont gérées par Gravatar, si vous voulez définir votre "
+"avatar, veuillez le définir avec ce même email (%1$s) à l'adresse http://gravatar.com/"
