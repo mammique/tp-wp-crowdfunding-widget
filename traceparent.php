@@ -239,11 +239,11 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
                             "\n\n".
                             sprintf(
                                 __("Your profile information is managed by Gravatar, ".
-                                   "if you want to set your avatar up, please set it using this very same email (%1$s) ".
+                                   'if you want to set your avatar up, please set it using this very same email (%1$s) '.
                                    "at http://gravatar.com/", 'traceparent'),
                                 $pp_result['payer_email']).
                             "\n\n".
-                            sprintf(__"Best regards,", 'traceparent').
+                            __("Best regards,", 'traceparent').
                             "\n\n".
                             get_bloginfo('name').'.');
 
