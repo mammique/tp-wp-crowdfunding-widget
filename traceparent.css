@@ -58,6 +58,10 @@ html[lang="fr-FR"] .tp_deadline:before { content: "Jusqu'au "; }
     padding: 5px;
 }
 
+.tp_goody:hover {
+    background-color: #eee;
+}
+
 .tp_goody .label {
     float: right;
 }
