@@ -64,12 +64,15 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
 		extract($args);
 
 		/* Our variables from the widget settings. */
-        $tp_url        = $instance['url'];
-        $tp_auth_token = $instance['auth_token'];
-        $tp_auth_user  = $instance['auth_user'];
-        $tp_scope      = $instance['scope'];
-        $tp_unit       = $instance['unit'];
-        $tp_counter    = $instance['counter'];
+        $tp_url                         = $instance['url'];
+        $tp_auth_token                  = $instance['auth_token'];
+        $tp_auth_user                   = $instance['auth_user'];
+        $tp_scope                       = $instance['scope'];
+        $tp_unit                        = $instance['unit'];
+        $tp_quantity_decimals           = $instance['quantity_decimals'];
+        $tp_quantity_separator          = $instance['quantity_separator'];
+        $tp_quantity_decimals_separator = $instance['quantity_decimals_separator'];
+        $tp_counter                     = $instance['counter'];
 
         $pp_url        = $instance['pp_url'];
         $pp_auth_token = $instance['pp_auth_token'];
@@ -300,7 +303,14 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
     }
 ?>
 
-    <div class="tp_info"><span class="tp_current"></span><span class="tp_amount_sep"></span><span class="tp_max"></span><small class="tp_deadline"></small></div>
+    <div class="tp_info">
+        <span class="tp_current"></span>
+        <span class="tp_max"></span>
+        <span class="tp_quantities_number"></span>
+        <span class="tp_remaining_days"></span>
+        <span class="tp_deadline"></span>
+    </div>
+
     <div class="tp_gauge"><div class="tp_mercury"></div></div>
 
     <form class="tp_post" action="<?php echo $pp_url ?>/cgi-bin/webscr" method="post" style="display: none;">
@@ -321,18 +331,64 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
 
 var max, current;
 
-var tp_url        = '<?php echo $tp_url ?>';
-var tp_auth_token = '<?php echo $tp_auth_token ?>';
-var tp_auth_user  = '<?php echo $tp_auth_user ?>';
-var tp_scope      = '<?php echo $tp_scope ?>';
-var tp_unit       = '<?php echo $tp_unit ?>';
-var tp_counter    = '<?php echo $tp_counter ?>';
+var tp_url                         = '<?php echo $tp_url ?>';
+var tp_auth_token                  = '<?php echo $tp_auth_token ?>';
+var tp_auth_user                   = '<?php echo $tp_auth_user ?>';
+var tp_scope                       = '<?php echo $tp_scope ?>';
+var tp_unit                        = '<?php echo $tp_unit ?>';
+var tp_quantity_decimals           = parseInt('<?php echo $tp_quantity_decimals ?>');
+var tp_quantity_separator          = '<?php echo $tp_quantity_separator ?>';
+var tp_quantity_decimals_separator = '<?php echo $tp_quantity_decimals_separator ?>';
+var tp_counter                     = '<?php echo $tp_counter ?>';
 
 if (tp_users == undefined) var tp_users = {};
 
 var $ = jQuery;
 
-function tp_unit_format(u, q) { return parseFloat(q).toFixed(u['decimal_places'])+u['symbol']; }
+function tp_unit_format(u, q) {
+
+    var n;
+    var dec = null;
+
+    if(tp_quantity_decimals == 0) n = '' + parseInt(q)
+
+    else {
+
+        var places;
+        if (tp_quantity_decimals < 0) places = u['decimal_places'];
+        else places = tp_quantity_decimals
+
+        var f = parseFloat(q).toFixed(places).split('.');
+        n     = f[0];
+        dec   = f[1];
+    }
+
+    n_sep = '';
+
+    if (tp_quantity_separator != '') {
+
+        var inc = 0;
+
+        for(i=n.length-1 ; i>=0 ; i--) {
+
+            if(i !=0 && inc % 3 == 0 && i != n.length-1) n_sep = tp_quantity_separator + n_sep;
+            n_sep = n[i] + n_sep;
+            inc++;
+        }
+
+        n = n_sep;
+    }
+
+    var r;
+    if(dec != null) r = n+tp_quantity_decimals_separator+dec;
+    else r = n;
+
+    var s;
+    if (tp_quantity_separator != '') s = ' '+u['symbol'];
+    else s = u['symbol']
+
+    return r+s;
+}
 
 $.getJSON(tp_url + "/monitor/counter/" + tp_counter + "/",
 
@@ -340,8 +396,12 @@ $.getJSON(tp_url + "/monitor/counter/" + tp_counter + "/",
 
               if(counter['datetime_stop']) {
 
-                  var d = new Date(counter['datetime_stop']);
-                  $('#' + tp_scope + ' .tp_deadline').text(d.toLocaleDateString());
+                  deadline = new Date(counter['datetime_stop']);
+                  today    = new Date();
+                  delta    = new Date(deadline - today);
+
+                  $('#' + tp_scope + ' .tp_remaining_days').text(parseInt(delta.getTime()/(1000*60*60*24)));
+                  $('#' + tp_scope + ' .tp_deadline').text(deadline.toLocaleDateString());
               }
           }
 );
@@ -431,6 +491,8 @@ $.getJSON(tp_url + "/value/quantity/filter/",
 
           function(quantities) {
 
+              $('#' + tp_scope + ' .tp_quantities_number').text(''+quantities.length);
+
               $(quantities).each(function(k, q) {
 
                   var img = $('<img src="http://www.gravatar.com/avatar/none?s=32" title="' + tp_unit_format(tp_unit, q['quantity']) + '" />');
@@ -494,6 +556,7 @@ $.getJSON(tp_url + "/value/quantity/filter/",
 		/* Set up some default widget settings. */
 		$defaults = array('url' => 'http://sandbox.api.traceparent.com/0.1-beta', 'auth_token' => '', 'auth_user' => '',
                           'scope' => '', 'unit' => '122cc224-7572-11e2-adfe-78929c525f0e',
+                          'quantity_decimals' => -1, 'quantity_separator' => ',', 'quantity_decimals_separator' => '.',
                           'counter' => '', 'pp_url' => 'https://www.sandbox.paypal.com', 'pp_auth_token' => '',
                           'pp_email' => '', 'pp_item_name' => 'Donation', 'pp_button' => __('Donate!', 'traceparent'));
 		$instance = wp_parse_args((array) $instance, $defaults); ?>
@@ -521,6 +584,21 @@ $.getJSON(tp_url + "/value/quantity/filter/",
 		<p>
 			<label for="<?php echo $this->get_field_id('unit'); ?>"><?php _e('unit:', 'traceparent'); ?></label>
 			<input id="<?php echo $this->get_field_id('unit'); ?>" name="<?php echo $this->get_field_name('unit'); ?>" value="<?php echo $instance['unit']; ?>" style="width: 100%;" />
+		</p>
+
+		<p>
+			<label for="<?php echo $this->get_field_id('quantity_decimals'); ?>"><?php _e('quantity_decimals:', 'traceparent'); ?></label>
+			<input id="<?php echo $this->get_field_id('quantity_decimals'); ?>" name="<?php echo $this->get_field_name('quantity_decimals'); ?>" value="<?php echo $instance['quantity_decimals']; ?>" style="width: 100%;" />
+		</p>
+
+		<p>
+			<label for="<?php echo $this->get_field_id('quantity_separator'); ?>"><?php _e('quantity_separator:', 'traceparent'); ?></label>
+			<input id="<?php echo $this->get_field_id('quantity_separator'); ?>" name="<?php echo $this->get_field_name('quantity_separator'); ?>" value="<?php echo $instance['quantity_separator']; ?>" style="width: 100%;" />
+		</p>
+
+		<p>
+			<label for="<?php echo $this->get_field_id('quantity_decimals_separator'); ?>"><?php _e('quantity_decimals_separator:', 'traceparent'); ?></label>
+			<input id="<?php echo $this->get_field_id('quantity_decimals_separator'); ?>" name="<?php echo $this->get_field_name('quantity_decimals_separator'); ?>" value="<?php echo $instance['quantity_decimals_separator']; ?>" style="width: 100%;" />
 		</p>
 
 <!--		<p>

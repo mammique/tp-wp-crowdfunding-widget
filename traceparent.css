@@ -43,12 +43,20 @@
     font-weight: bold;
 }
 
-.tp_amount_sep:after { content: " / "; }
+.tp_remaining_days { display: block; }
+.tp_remaining_days:after { content: " day(s) left"; }
+html[lang="fr-FR"] .tp_remaining_days:after { content: " jours(s) restant(s)"; }
+
+.tp_max:before { content: " over "; }
+html[lang="fr-FR"] .tp_max:before { content: " sur "; }
 
 .tp_deadline { display: block; }
-
 .tp_deadline:before { content: "Until: "; }
 html[lang="fr-FR"] .tp_deadline:before { content: "Jusqu'au "; }
+
+.tp_quantities_number { display: block; }
+.tp_quantities_number:after { content: " suscriber(s)"; }
+html[lang="fr-FR"] .tp_quantities_number:after { content: " souscripteur(s)"; }
 
 .tp_goody {
     cursor: pointer;
