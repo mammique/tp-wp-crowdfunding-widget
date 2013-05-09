@@ -390,7 +390,7 @@ function tp_unit_format(u, q) {
     return r+s;
 }
 
-// For Safarihttp://stackoverflow.com/a/9282695
+// For Safari: http://stackoverflow.com/a/9282695
 var re_iso_8601 = /^(\d{4})-(\d{2})-(\d{2})((T)(\d{2}):(\d{2})(:(\d{2})(\.\d*)?)?)?(Z)?$/;
 
 function iso_8601(val) {
