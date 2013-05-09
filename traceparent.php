@@ -80,6 +80,8 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
         $pp_item_name  = $instance['pp_item_name'];
         $pp_button     = $instance['pp_button'];
 
+        $email_content_append = $instance['email_content_append'];
+
 		/* Before widget (defined by themes). */
 		echo $before_widget;
 
@@ -89,7 +91,7 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
 
 <?php
 
-    if($_GET['cm'] == "scope=$tp_scope") {
+    if(rawurldecode($_GET['cm']) == "scope=$tp_scope") {
 
         require_once 'vendor/autoload.php';
 
@@ -227,6 +229,10 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
                     $request = $tp_client->post("monitor/scope/$tp_scope/update/quantities/add/")
                                    ->addPostFields(array('uuid' => $quantity['uuid']))->send();
 
+                    
+                    if($email_content_append != '') $mail_append = "\n\n".$email_content_append;
+                    else $mail_append = '';
+
                     wp_mail($pp_result['payer_email'],
 
                             '['.get_bloginfo('name').'] '.__('Thank you for your participation!', 'traceparent'),
@@ -245,6 +251,7 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
                                    'if you want to set your avatar up, please set it using this very same email (%1$s) '.
                                    "at http://gravatar.com/", 'traceparent'),
                                 $pp_result['payer_email']).
+                            $mail_append.
                             "\n\n".
                             __("Best regards,", 'traceparent').
                             "\n\n".
@@ -571,7 +578,7 @@ $.getJSON(tp_url + "/value/quantity/filter/",
                           'scope' => '', 'unit' => '122cc224-7572-11e2-adfe-78929c525f0e',
                           'quantity_decimals' => -1, 'quantity_separator' => ',', 'quantity_decimals_separator' => '.',
                           'counter' => '', 'pp_url' => 'https://www.sandbox.paypal.com', 'pp_auth_token' => '',
-                          'pp_email' => '', 'pp_item_name' => 'Donation', 'pp_button' => __('Donate!', 'traceparent'));
+                          'pp_email' => '', 'email_content_append' => '', 'pp_item_name' => 'Donation', 'pp_button' => __('Donate!', 'traceparent'));
 		$instance = wp_parse_args((array) $instance, $defaults); ?>
 
 		<p>
@@ -637,6 +644,11 @@ $.getJSON(tp_url + "/value/quantity/filter/",
 		<p>
 			<label for="<?php echo $this->get_field_id('pp_email'); ?>"><?php _e('pp_email:', 'traceparent'); ?></label>
 			<input id="<?php echo $this->get_field_id('pp_email'); ?>" name="<?php echo $this->get_field_name('pp_email'); ?>" value="<?php echo $instance['pp_email']; ?>" style="width: 100%;" />
+		</p>
+
+		<p>
+			<label for="<?php echo $this->get_field_id('email_content_append'); ?>"><?php _e('email_content_append:', 'traceparent'); ?></label>
+			<textarea id="<?php echo $this->get_field_id('email_content_append'); ?>" name="<?php echo $this->get_field_name('email_content_append'); ?>"  style="width: 100%;"><?php echo $instance['email_content_append']; ?></textarea>
 		</p>
 
 		<p>
