@@ -390,15 +390,28 @@ function tp_unit_format(u, q) {
     return r+s;
 }
 
+// For Safarihttp://stackoverflow.com/a/9282695
+var re_iso_8601 = /^(\d{4})-(\d{2})-(\d{2})((T)(\d{2}):(\d{2})(:(\d{2})(\.\d*)?)?)?(Z)?$/;
+
+function iso_8601(val) {
+
+    var m;
+    m = typeof val === 'string' && val.match(re_iso_8601);
+    if (m) return new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[6] || 0, +m[7] || 0, +m[9] || 0, parseInt((+m[10]) * 1000) || 0));
+
+    return null;
+}
+
 $.getJSON(tp_url + "/monitor/counter/" + tp_counter + "/",
 
           function(counter) {
 
               if(counter['datetime_stop']) {
 
-                  deadline = new Date(counter['datetime_stop']);
-                  today    = new Date();
-                  delta    = new Date(deadline - today);
+                  // deadline = new Date(counter['datetime_stop']); // Safari bugs on this.
+                  var deadline = iso_8601(counter['datetime_stop']);
+                  today        = new Date();
+                  delta        = new Date(deadline - today);
 
                   $('#' + tp_scope + ' .tp_remaining_days').text(parseInt(delta.getTime()/(1000*60*60*24)));
                   $('#' + tp_scope + ' .tp_deadline').text(deadline.toLocaleDateString());
