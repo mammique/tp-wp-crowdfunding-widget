@@ -471,7 +471,7 @@ $.getJSON(tp_url + "/value/unit/" + tp_unit + "/",
                                 goodict[q] = content;
                             });
 
-                            goodies_q.sort(function(a,b) { return a > b; } );
+                            goodies_q.sort(function(a, b) { return a - b; } );
 
                             $(goodies_q).each(function(k, v) {
 
