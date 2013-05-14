@@ -331,7 +331,7 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
         <input type="hidden" name="currency_code" value="" />
         <input type="hidden" name="custom" value="scope=<?php echo $tp_scope ?>" />
         <div class="tp_goodies"></div>
-        <input type="<?php if($bootstrap) echo "btn "; ?>submit" value="<?php echo $pp_button ?>" />
+        <input <?php if($bootstrap) echo 'class="btn" '; ?>type="submit" value="<?php echo $pp_button ?>" />
         <div class="tp_quantities"></div>
     </form>
 
