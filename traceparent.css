@@ -15,6 +15,14 @@
     border-radius: 3px 0 0 3px;
 }
 
+.tp_crowdfunding_widget form input[type="submit"] {
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+    font-size: 140%;
+    margin-bottom: 15px;
+}
+
 .tp_quantities img {
     cursor: pointer;
     margin: 1px;
@@ -41,9 +49,14 @@
 .tp_info {
     font-size: 120%;
     font-weight: bold;
+    line-height: 130%;
 }
 
-.tp_remaining_days { display: block; }
+.tp_remaining_days {
+    display: block;
+    padding-left: 24px;
+    background: transparent url(remaining_days.png) 2px center no-repeat;
+}
 .tp_remaining_days:after { content: " day(s) left"; }
 html[lang="fr-FR"] .tp_remaining_days:after { content: " jours(s) restant(s)"; }
 
@@ -54,7 +67,11 @@ html[lang="fr-FR"] .tp_max:before { content: " sur "; }
 .tp_deadline:before { content: "Until: "; }
 html[lang="fr-FR"] .tp_deadline:before { content: "Jusqu'au "; }
 
-.tp_quantities_number { display: block; }
+.tp_quantities_number {
+    display: block;
+    padding-left: 24px;
+    background: transparent url(quantities_number.png) left center no-repeat;
+}
 .tp_quantities_number:after { content: " suscriber(s)"; }
 html[lang="fr-FR"] .tp_quantities_number:after { content: " souscripteur(s)"; }
 
@@ -63,16 +80,33 @@ html[lang="fr-FR"] .tp_quantities_number:after { content: " souscripteur(s)"; }
     border: 1px solid #ccc;
     border-radius: 5px;
     margin-bottom: 5px;
-    padding: 5px;
+    padding: 10px;
 }
 
 .tp_goody:hover {
     background-color: #eee;
 }
 
-.tp_goody .label {
+.tp_goody .tp_label {
     float: right;
+    background-color: #999;
+    color: white;
+    padding: 3px 5px;
+    margin-top: -3px;
+    border-radius: 2px;
 }
+
+.tp_goody .tp_tax_free {
+    color: green;
+    margin-left: 5px;
+    font-size: smaller;
+}
+
+.tp_goody .tp_tax_free:before { content: "("; }
+.tp_goody .tp_tax_free:after { content: " after tax cut)"; }
+html[lang="fr-FR"] .tp_goody .tp_tax_free:after { content: " après déduction)"; }
+
+.tp_goody .tp_tax_free:empty { display: none; }
 
 .tp_goody .desc {
     padding-top: 5px;

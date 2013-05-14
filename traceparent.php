@@ -73,6 +73,10 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
         $tp_quantity_separator          = $instance['quantity_separator'];
         $tp_quantity_decimals_separator = $instance['quantity_decimals_separator'];
         $tp_counter                     = $instance['counter'];
+        $tp_jurisdiction                = $instance['jurisdiction'];
+
+        $bootstrap = false;
+        if($instance['bootstrap'] == 'on') $bootstrap = true;
 
         $pp_url        = $instance['pp_url'];
         $pp_auth_token = $instance['pp_auth_token'];
@@ -318,7 +322,7 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
         <span class="tp_deadline"></span>
     </div>
 
-    <div class="tp_gauge"><div class="tp_mercury"></div></div>
+    <div class="<?php if($bootstrap) echo "progress progress-striped active "; ?>tp_gauge"><div class="<?php if($bootstrap) echo "bar "; ?>tp_mercury"></div></div>
 
     <form class="tp_post" action="<?php echo $pp_url ?>/cgi-bin/webscr" method="post" style="display: none;">
         <input type="hidden" name="business" value="<?php echo $pp_email ?>" />
@@ -326,11 +330,10 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
         <input type="hidden" name="item_name" value="<?php echo $pp_item_name ?>" />
         <input type="hidden" name="currency_code" value="" />
         <input type="hidden" name="custom" value="scope=<?php echo $tp_scope ?>" />
-        <input type="submit" value="<?php echo $pp_button ?>" />
+        <div class="tp_goodies"></div>
+        <input type="<?php if($bootstrap) echo "btn "; ?>submit" value="<?php echo $pp_button ?>" />
+        <div class="tp_quantities"></div>
     </form>
-
-    <div class="tp_goodies"></div>
-    <div class="tp_quantities"></div>
 
 </div>
 
@@ -347,23 +350,25 @@ var tp_quantity_decimals           = parseInt('<?php echo $tp_quantity_decimals 
 var tp_quantity_separator          = '<?php echo $tp_quantity_separator ?>';
 var tp_quantity_decimals_separator = '<?php echo $tp_quantity_decimals_separator ?>';
 var tp_counter                     = '<?php echo $tp_counter ?>';
+var tp_jurisdiction                = '<?php echo $tp_jurisdiction ?>';
 
 if (tp_users == undefined) var tp_users = {};
 
 var $ = jQuery;
 
-function tp_unit_format(u, q) {
+function tp_unit_format(u, q, dec_pl) {
 
     var n;
     var dec = null;
+    if(dec_pl == undefined) dec_pl = tp_quantity_decimals;
 
-    if(tp_quantity_decimals == 0) n = '' + parseInt(q)
+    if(dec_pl == 0) n = '' + parseInt(q)
 
     else {
 
         var places;
-        if (tp_quantity_decimals < 0) places = u['decimal_places'];
-        else places = tp_quantity_decimals
+        if (dec_pl < 0) places = u['decimal_places'];
+        else places = dec_pl
 
         var f = parseFloat(q).toFixed(places).split('.');
         n     = f[0];
@@ -484,12 +489,18 @@ $.getJSON(tp_url + "/value/unit/" + tp_unit + "/",
 
                                 var goody = goodict[v];
                                 var q_min = goody['q_range'][tp_unit['uuid']][0];
-                                var el    = $('<div class="tp_goody"><strong class="quantity_min">' +
-                                              '</strong><span class="label"></span><p class="desc"></p>' +
+                                var el    = $('<div class="tp_goody"><strong class="tp_quantity_min">' +
+                                              '</strong><span class="<?php if($bootstrap) echo "label "; ?>tp_label"></span>' +
+                                              '<span class="tp_tax_free"></span><p class="tp_desc"></p>' +
                                               '</div>');
-                                $('.quantity_min', el).text(tp_unit_format(tp_unit, q_min));
-                                $('.label', el).text(goody['label']);
-                                $('.desc', el).text(goody['desc']);
+                                $('.tp_quantity_min', el).text(tp_unit_format(tp_unit, q_min));
+                                $('.tp_label', el).text(goody['label']);
+                                $('.tp_desc', el).text(goody['desc']);
+
+                                if(goody['tax_free'] != undefined &&
+                                   goody['tax_free'][tp_jurisdiction] != undefined &&
+                                   goody['tax_free'][tp_jurisdiction]['individual'] != undefined)
+                                    $('.tp_tax_free', el).text(tp_unit_format(tp_unit, q_min * (100 - goody['tax_free'][tp_jurisdiction]['individual']) / 100, -1));
 
                                 el.click(function() {
 
@@ -577,7 +588,7 @@ $.getJSON(tp_url + "/value/quantity/filter/",
 		$defaults = array('url' => 'http://sandbox.api.traceparent.com/0.1-beta', 'auth_token' => '', 'auth_user' => '',
                           'scope' => '', 'unit' => '122cc224-7572-11e2-adfe-78929c525f0e',
                           'quantity_decimals' => -1, 'quantity_separator' => ',', 'quantity_decimals_separator' => '.',
-                          'counter' => '', 'pp_url' => 'https://www.sandbox.paypal.com', 'pp_auth_token' => '',
+                          'counter' => '', 'jurisdiction' => 'FR', 'bootstrap' => '', 'pp_url' => 'https://www.sandbox.paypal.com', 'pp_auth_token' => '',
                           'pp_email' => '', 'email_content_append' => '', 'pp_item_name' => 'Donation', 'pp_button' => __('Donate!', 'traceparent'));
 		$instance = wp_parse_args((array) $instance, $defaults); ?>
 
@@ -629,6 +640,16 @@ $.getJSON(tp_url + "/value/quantity/filter/",
 		<p>
 			<label for="<?php echo $this->get_field_id('counter'); ?>"><?php _e('counter:', 'traceparent'); ?></label>
 			<input id="<?php echo $this->get_field_id('counter'); ?>" name="<?php echo $this->get_field_name('counter'); ?>" value="<?php echo $instance['counter']; ?>" style="width: 100%;" />
+		</p>
+
+		<p>
+			<label for="<?php echo $this->get_field_id('jurisdiction'); ?>"><?php _e('jurisdiction (ISO 3166-2):', 'traceparent'); ?></label>
+			<input id="<?php echo $this->get_field_id('jurisdiction'); ?>" name="<?php echo $this->get_field_name('jurisdiction'); ?>" value="<?php echo $instance['jurisdiction']; ?>" style="width: 100%;" />
+		</p>
+
+		<p>
+			<label for="<?php echo $this->get_field_id('bootstrap'); ?>"><?php _e('bootstrap:', 'traceparent'); ?></label>
+			<input type="checkbox" id="<?php echo $this->get_field_id('bootstrap'); ?>" <?php if($instance['bootstrap'] == 'on') echo 'checked="checked" '; ?>name="<?php echo $this->get_field_name('bootstrap'); ?>" />
 		</p>
 
 		<p>
