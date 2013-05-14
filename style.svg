@@ -47,8 +47,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="159.40276"
-     inkscape:cy="26.818492"
+     inkscape:cx="202.25991"
+     inkscape:cy="14.675635"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -164,6 +164,9 @@
        d="m 102.0056,1008.442 30.03962,18.9202 -30.03962,18.9202 z"
        id="rect4760"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccc" />
+       sodipodi:nodetypes="cccc"
+       inkscape:export-filename="/home/mammique/Public/traceparent/wordpress/wp-content/plugins/tp-wp-crowdfunding-widget/max.png"
+       inkscape:export-xdpi="41"
+       inkscape:export-ydpi="41" />
   </g>
 </svg>

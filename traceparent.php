@@ -317,9 +317,9 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
     <div class="tp_info">
         <span class="tp_current"></span>
         <span class="tp_max"></span>
-        <span class="tp_quantities_number"></span>
-        <span class="tp_remaining_days"></span>
         <span class="tp_deadline"></span>
+        <span class="tp_remaining_days"></span>
+        <span class="tp_quantities_number"></span>
     </div>
 
     <div class="<?php if($bootstrap) echo "progress progress-striped active "; ?>tp_gauge"><div class="<?php if($bootstrap) echo "bar "; ?>tp_mercury"></div></div>
