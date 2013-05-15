@@ -48,7 +48,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
      inkscape:cx="202.25991"
-     inkscape:cy="14.675635"
+     inkscape:cy="15.032778"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -113,7 +113,7 @@
          inkscape:export-xdpi="24.92"
          inkscape:export-filename="/home/mammique/yooook/site/yooook/file/style/next_wizard_step_resume_indent_selected.png"
          transform="matrix(0.46635992,0,0,0.46635991,-333.94708,1328.4292)"
-         d="m 905.11118,-645.56787 a 38.156647,38.156647 0 1 1 -76.3133,0 38.156647,38.156647 0 1 1 76.3133,0 z"
+         d="m 905.11118,-645.56787 c 0,21.07333 -17.08332,38.15665 -38.15665,38.15665 -21.07334,0 -38.15665,-17.08332 -38.15665,-38.15665 0,-21.07334 17.08331,-38.15665 38.15665,-38.15665 21.07333,0 38.15665,17.08331 38.15665,38.15665 z"
          sodipodi:ry="38.156647"
          sodipodi:rx="38.156647"
          sodipodi:cy="-645.56787"
@@ -165,6 +165,15 @@
        id="rect4760"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccc"
+       inkscape:export-filename="/home/mammique/Public/traceparent/wordpress/wp-content/plugins/tp-wp-crowdfunding-widget/max.png"
+       inkscape:export-xdpi="41"
+       inkscape:export-ydpi="41" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path2623"
+       d="m 154.31855,1015.465 c -2.93301,0 -5.49605,1.5244 -6.95143,3.8228 l -1.56423,0 c -3.09383,0 -5.58191,2.4882 -5.58191,5.582 l 0,4.9848 c 0,3.0937 2.48808,5.5884 5.58191,5.5884 l 1.57073,0 c 1.45591,2.2957 4.01398,3.8164 6.94493,3.8164 l 7.78872,0 c 4.55635,0 7.24991,-3.7724 8.22359,-8.2236 1.02805,-4.6996 1.7625,-7.5396 1.75894,-7.6394 l 10.65757,0 c 2.19681,0 3.96575,-1.7689 3.96575,-3.9657 0,-2.1969 -1.76894,-3.9657 -3.96575,-3.9657 l -18.14772,0 -6.90599,0 -3.37511,0 z"
+       style="color:#000000;fill:#4d4d4d;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.44579482;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       sodipodi:nodetypes="ccccccccccccscccc"
        inkscape:export-filename="/home/mammique/Public/traceparent/wordpress/wp-content/plugins/tp-wp-crowdfunding-widget/max.png"
        inkscape:export-xdpi="41"
        inkscape:export-ydpi="41" />
