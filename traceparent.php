@@ -322,7 +322,7 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
         <span class="tp_quantities_number"></span>
     </div>
 
-    <div class="<?php if($bootstrap) echo "progress progress-striped active "; ?>tp_gauge"><div class="<?php if($bootstrap) echo "bar "; ?>tp_mercury"></div></div>
+    <div class="<?php if($bootstrap) echo "progress progress-striped active "; ?>tp_gauge"><div class="<?php if($bootstrap) echo "bar "; ?>tp_mercury"><span class="tp_pc"></span></div></div>
 
     <form class="tp_post" action="<?php echo $pp_url ?>/cgi-bin/webscr" method="post" style="display: none;">
         <input type="hidden" name="business" value="<?php echo $pp_email ?>" />
@@ -455,8 +455,10 @@ $.getJSON(tp_url + "/value/unit/" + tp_unit + "/",
                                       function(sums) {
 
                                           current = sums[0]['quantity'];
+                                          var pc  = (current / max * 100);
 
-                                          $('#' + tp_scope + ' .tp_mercury').width((current / max * 100) + '%');
+                                          $('#' + tp_scope + ' .tp_mercury').width(pc + '%');
+                                          $('#' + tp_scope + ' .tp_mercury .tp_pc').text(parseInt(pc)+'%');
                                           $('#' + tp_scope + ' .tp_current').text(tp_unit_format(tp_unit, current));
                                           $('#' + tp_scope + ' .tp_max').text(tp_unit_format(tp_unit, max));
                                       }
@@ -489,13 +491,14 @@ $.getJSON(tp_url + "/value/unit/" + tp_unit + "/",
 
                                 var goody = goodict[v];
                                 var q_min = goody['q_range'][tp_unit['uuid']][0];
-                                var el    = $('<div class="tp_goody"><strong class="tp_quantity_min">' +
+                                var el    = $('<div class="tp_goody tp_goody_' + goody['slug'] +
+                                              '"><strong class="tp_quantity_min">' +
                                               '</strong><span class="<?php if($bootstrap) echo "label "; ?>tp_label"></span>' +
                                               '<span class="tp_tax_free"></span><p class="tp_desc"></p>' +
                                               '</div>');
                                 $('.tp_quantity_min', el).text(tp_unit_format(tp_unit, q_min));
                                 $('.tp_label', el).text(goody['label']);
-                                $('.tp_desc', el).text(goody['desc']);
+                                $('.tp_desc', el).text(goody['desc'].replace("\n", '<br />'));
 
                                 if(goody['tax_free'] != undefined &&
                                    goody['tax_free'][tp_jurisdiction] != undefined &&

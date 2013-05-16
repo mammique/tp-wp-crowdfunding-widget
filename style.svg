@@ -16,6 +16,24 @@
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
    sodipodi:docname="style.svg">
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2.8"
+     inkscape:cx="140.83134"
+     inkscape:cy="15.032778"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1364"
+     inkscape:window-height="747"
+     inkscape:window-x="0"
+     inkscape:window-y="19"
+     inkscape:window-maximized="1" />
   <defs
      id="defs4692">
     <linearGradient
@@ -39,24 +57,6 @@
          id="stop3354" />
     </linearGradient>
   </defs>
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="202.25991"
-     inkscape:cy="15.032778"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer1"
-     showgrid="false"
-     inkscape:window-width="1364"
-     inkscape:window-height="747"
-     inkscape:window-x="0"
-     inkscape:window-y="19"
-     inkscape:window-maximized="1" />
   <metadata
      id="metadata4695">
     <rdf:RDF>
@@ -65,7 +65,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -76,7 +76,7 @@
      transform="translate(0,-1002.3622)">
     <path
        inkscape:connector-curvature="0"
-       style="fill:#4d4d4d;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.44579482;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.44579482;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        d="m 9.6158186,1007.8216 c 0,10.008 13.0437804,18.2566 13.0437804,19.3175 0,1.0609 -13.0437704,9.3094 -13.0437804,19.3175 l 29.2845504,0 c 0,-10.0081 -13.04376,-18.2566 -13.04376,-19.3175 0,-1.0609 13.04376,-9.3095 13.04376,-19.3175 l -29.2845504,0 z"
        id="path3336"
        sodipodi:nodetypes="czcczcc"
@@ -84,10 +84,10 @@
        inkscape:export-xdpi="41.930893"
        inkscape:export-ydpi="41.930893" />
     <g
-       id="g4953"
+       id="g3132"
        inkscape:export-filename="/home/mammique/Public/traceparent/wordpress/wp-content/plugins/tp-wp-crowdfunding-widget/quantities_number.png"
-       inkscape:export-xdpi="41.930889"
-       inkscape:export-ydpi="41.930889">
+       inkscape:export-xdpi="41"
+       inkscape:export-ydpi="41">
       <rect
          inkscape:export-ydpi="24.92"
          inkscape:export-xdpi="24.92"
@@ -98,16 +98,6 @@
          width="36.522182"
          id="rect3697"
          style="fill:#dddff0;fill-opacity:0;fill-rule:nonzero;stroke:none;stroke-width:3.64100003;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-      <rect
-         inkscape:export-ydpi="24.92"
-         inkscape:export-xdpi="24.92"
-         inkscape:export-filename="/home/mammique/yooook/site/yooook/file/style/next_wizard_step_resume_indent_selected.png"
-         y="1009.1011"
-         x="52.104671"
-         height="36.522182"
-         width="36.522182"
-         id="rect3699"
-         style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.64100003;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
       <path
          inkscape:export-ydpi="24.92"
          inkscape:export-xdpi="24.92"
@@ -119,36 +109,28 @@
          sodipodi:cy="-645.56787"
          sodipodi:cx="866.95453"
          id="path3701"
-         style="fill:none;stroke:#4d4d4d;stroke-width:6.53044700999999961;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         style="fill:none;stroke:#888888;stroke-width:6.53044701;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          sodipodi:type="arc" />
-      <g
-         inkscape:export-ydpi="24.92"
-         inkscape:export-xdpi="24.92"
-         inkscape:export-filename="/home/mammique/yooook/site/yooook/file/style/next_wizard_step_resume_indent_selected.png"
-         transform="matrix(0.46635992,0,0,0.46635991,-333.25737,1328.4292)"
-         id="g3703"
-         style="fill:#4d4d4d;fill-opacity:1">
-        <path
-           sodipodi:type="arc"
-           style="fill:#4d4d4d;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-           id="path3705"
-           sodipodi:cx="842.05267"
-           sodipodi:cy="-659.98572"
-           sodipodi:rx="6.27461"
-           sodipodi:ry="6.27461"
-           d="m 848.32728,-659.98572 c 0,3.46537 -2.80924,6.27461 -6.27461,6.27461 -3.46537,0 -6.27461,-2.80924 -6.27461,-6.27461 0,-3.46537 2.80924,-6.27461 6.27461,-6.27461 3.46537,0 6.27461,2.80924 6.27461,6.27461 z"
-           transform="translate(6.9018555,3.3464584)" />
-        <path
-           d="m 848.32728,-659.98572 c 0,3.46537 -2.80924,6.27461 -6.27461,6.27461 -3.46537,0 -6.27461,-2.80924 -6.27461,-6.27461 0,-3.46537 2.80924,-6.27461 6.27461,-6.27461 3.46537,0 6.27461,2.80924 6.27461,6.27461 z"
-           sodipodi:ry="6.27461"
-           sodipodi:rx="6.27461"
-           sodipodi:cy="-659.98572"
-           sodipodi:cx="842.05267"
-           id="path3707"
-           style="fill:#4d4d4d;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-           sodipodi:type="arc"
-           transform="translate(39.943975,3.3464584)" />
-      </g>
+      <path
+         transform="matrix(0.46635992,0,0,0.46635991,-330.03862,1329.9899)"
+         d="m 848.32728,-659.98572 c 0,3.46537 -2.80924,6.27461 -6.27461,6.27461 -3.46537,0 -6.27461,-2.80924 -6.27461,-6.27461 0,-3.46537 2.80924,-6.27461 6.27461,-6.27461 3.46537,0 6.27461,2.80924 6.27461,6.27461 z"
+         sodipodi:ry="6.27461"
+         sodipodi:rx="6.27461"
+         sodipodi:cy="-659.98572"
+         sodipodi:cx="842.05267"
+         id="path3705"
+         style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         sodipodi:type="arc" />
+      <path
+         transform="matrix(0.46635992,0,0,0.46635991,-314.6291,1329.9899)"
+         sodipodi:type="arc"
+         style="fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         id="path3707"
+         sodipodi:cx="842.05267"
+         sodipodi:cy="-659.98572"
+         sodipodi:rx="6.27461"
+         sodipodi:ry="6.27461"
+         d="m 848.32728,-659.98572 c 0,3.46537 -2.80924,6.27461 -6.27461,6.27461 -3.46537,0 -6.27461,-2.80924 -6.27461,-6.27461 0,-3.46537 2.80924,-6.27461 6.27461,-6.27461 3.46537,0 6.27461,2.80924 6.27461,6.27461 z" />
       <path
          inkscape:export-ydpi="24.92"
          inkscape:export-xdpi="24.92"
@@ -156,11 +138,11 @@
          sodipodi:nodetypes="cssssss"
          id="path3709"
          d="m 81.06417,1031.8805 c -0.587835,1.389 -1.438357,2.6401 -2.489197,3.6909 -1.05083,1.0509 -2.301951,1.9014 -3.690965,2.4892 -1.389005,0.5879 -2.915903,0.913 -4.518279,0.913 -1.602358,0 -3.129265,-0.3251 -4.51827,-0.913 -1.389014,-0.5878 -2.640134,-1.4383 -3.690965,-2.4892 -1.050831,-1.0508 -1.901362,-2.3019 -2.489188,-3.6909"
-         style="fill:none;stroke:#4d4d4d;stroke-width:3.04553818999999981;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         style="fill:none;stroke:#888888;stroke-width:3.04553819;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          inkscape:connector-curvature="0" />
     </g>
     <path
-       style="color:#000000;fill:#4d4d4d;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.44579481999999998;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       style="color:#000000;fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.44579481999999998;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        d="m 102.0056,1008.442 30.03962,18.9202 -30.03962,18.9202 z"
        id="rect4760"
        inkscape:connector-curvature="0"
@@ -172,7 +154,7 @@
        inkscape:connector-curvature="0"
        id="path2623"
        d="m 154.31855,1015.465 c -2.93301,0 -5.49605,1.5244 -6.95143,3.8228 l -1.56423,0 c -3.09383,0 -5.58191,2.4882 -5.58191,5.582 l 0,4.9848 c 0,3.0937 2.48808,5.5884 5.58191,5.5884 l 1.57073,0 c 1.45591,2.2957 4.01398,3.8164 6.94493,3.8164 l 7.78872,0 c 4.55635,0 7.24991,-3.7724 8.22359,-8.2236 1.02805,-4.6996 1.7625,-7.5396 1.75894,-7.6394 l 10.65757,0 c 2.19681,0 3.96575,-1.7689 3.96575,-3.9657 0,-2.1969 -1.76894,-3.9657 -3.96575,-3.9657 l -18.14772,0 -6.90599,0 -3.37511,0 z"
-       style="color:#000000;fill:#4d4d4d;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.44579482;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       style="color:#000000;fill:#888888;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.44579482;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        sodipodi:nodetypes="ccccccccccccscccc"
        inkscape:export-filename="/home/mammique/Public/traceparent/wordpress/wp-content/plugins/tp-wp-crowdfunding-widget/max.png"
        inkscape:export-xdpi="41"

@@ -5,7 +5,7 @@
 .tp_gauge {
     border-radius: 3px;
     background-color: #ccc;
-    height: 35px;
+    height: 36px;
 }
 
 .tp_mercury {
@@ -13,6 +13,15 @@
     height: inherit;
     background-color: #800;
     border-radius: 3px 0 0 3px;
+}
+
+.tp_mercury .tp_pc {
+    color: white;
+    font-size: 20px;
+    position: absolute;
+    display: block;
+    margin-left: 0.5%;
+    margin-top: 8px;
 }
 
 .tp_crowdfunding_widget form input[type="submit"] {
