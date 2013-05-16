@@ -482,7 +482,8 @@ $.getJSON(tp_url + "/value/unit/" + tp_unit + "/",
                                 var content = $.parseJSON(v['content']);
                                 var q = parseFloat(content['q_range'][tp_unit['uuid']][0]);
                                 goodies_q.push(q);
-                                goodict[q] = content;
+                                goodict[q] = v;
+                                goodict[q]['content'] = content;
                             });
 
                             goodies_q.sort(function(a, b) { return a - b; } );
@@ -490,20 +491,20 @@ $.getJSON(tp_url + "/value/unit/" + tp_unit + "/",
                             $(goodies_q).each(function(k, v) {
 
                                 var goody = goodict[v];
-                                var q_min = goody['q_range'][tp_unit['uuid']][0];
+                                var q_min = goody['content']['q_range'][tp_unit['uuid']][0];
                                 var el    = $('<div class="tp_goody tp_goody_' + goody['slug'] +
                                               '"><strong class="tp_quantity_min">' +
                                               '</strong><span class="<?php if($bootstrap) echo "label "; ?>tp_label"></span>' +
                                               '<span class="tp_tax_free"></span><p class="tp_desc"></p>' +
                                               '</div>');
                                 $('.tp_quantity_min', el).text(tp_unit_format(tp_unit, q_min));
-                                $('.tp_label', el).text(goody['label']);
-                                $('.tp_desc', el).text(goody['desc'].replace("\n", '<br />'));
+                                $('.tp_label', el).text(goody['content']['label']);
+                                $('.tp_desc', el).text(goody['content']['desc'].replace("\n", '<br />'));
 
-                                if(goody['tax_free'] != undefined &&
-                                   goody['tax_free'][tp_jurisdiction] != undefined &&
-                                   goody['tax_free'][tp_jurisdiction]['individual'] != undefined)
-                                    $('.tp_tax_free', el).text(tp_unit_format(tp_unit, q_min * (100 - goody['tax_free'][tp_jurisdiction]['individual']) / 100, -1));
+                                if(goody['content']['tax_free'] != undefined &&
+                                   goody['content']['tax_free'][tp_jurisdiction] != undefined &&
+                                   goody['content']['tax_free'][tp_jurisdiction]['individual'] != undefined)
+                                    $('.tp_tax_free', el).text(tp_unit_format(tp_unit, q_min * (100 - goody['content']['tax_free'][tp_jurisdiction]['individual']) / 100, -1));
 
                                 el.click(function() {
 
