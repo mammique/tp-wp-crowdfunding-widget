@@ -335,6 +335,8 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
         <div class="tp_quantities"></div>
     </form>
 
+    <a class="tp_powered" href="http://traceparent.com/"><img src="<?php echo WP_PLUGIN_URL ?>/tp-wp-crowdfunding-widget/traceparent_logo.png"></a>
+
 </div>
 
 <script type="text/javascript">
