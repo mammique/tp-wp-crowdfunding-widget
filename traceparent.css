@@ -123,13 +123,15 @@ html[lang="fr-FR"] .tp_goody .tp_tax_free:after { content: " après déduction)"
 }
 
 .tp_powered {
-    display: block;
-    font-size: 10px;
-    text-decoration: none;
-    text-align: right;
+    display: block !important;
+    font-size: 10px !important;
+    line-height: 10px !important;
+    text-decoration: none !important;
+    text-align: right !important;
 }
 .tp_powered img {
-    vertical-align: -40%;
+    margin-left: 2px !important;
+    vertical-align: -40% !important;
     box-shadow: none !important;
 }
 .tp_powered:before { content: "Powered by "; }
