@@ -67,7 +67,7 @@
     background: transparent url(remaining_days.png) 2px center no-repeat;
 }
 .tp_remaining_days:after { content: " day(s) left"; }
-html[lang="fr-FR"] .tp_remaining_days:after { content: " jours(s) restant(s)"; }
+html[lang="fr-FR"] .tp_remaining_days:after { content: " jour(s) restant(s)"; }
 
 .tp_max:before { content: " over "; }
 html[lang="fr-FR"] .tp_max:before { content: " sur "; }
