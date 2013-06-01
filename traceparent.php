@@ -32,6 +32,16 @@ function tp_crowdfunding_load_widgets() {
     load_theme_textdomain('traceparent', __DIR__.'/', __DIR__.'/');
 }
 
+// http://wordpress.stackexchange.com/a/9104
+add_filter('wp_mail_from','tp_wp_mail_from');
+function tp_wp_mail_from($content_type) {
+  return get_option('admin_email');
+}
+add_filter('wp_mail_from_name','tp_wp_mail_from_name');
+function tp_wp_mail_from_name($name) {
+  return get_bloginfo('name');
+}
+
 /**
  * Traceparent Crowdfunding Widget class.
  * This class handles everything that needs to be handled with the widget:
@@ -182,7 +192,7 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
                     echo '<p class="tp_feedback tp_error">'.
                          __("Transaction already registered.", 'traceparent').
                          '</p>';
-//                    echo '<script type="text/javascript">document.location="./";</script>';
+                    echo '<script type="text/javascript">document.location="./";</script>';
 
                 } else { // If not already registered.
                                
