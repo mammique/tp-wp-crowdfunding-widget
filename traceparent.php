@@ -368,6 +368,13 @@ if (tp_users == undefined) var tp_users = {};
 
 var $ = jQuery;
 
+</script>
+
+<!-- IE CORS FIX -->
+<?php echo '<script type="text/javascript" src="'.WP_PLUGIN_URL.'/tp-wp-crowdfunding-widget/jquery.ie.cors.js"></script>'; ?>
+
+<script type="text/javascript">
+
 function tp_unit_format(u, q, dec_pl) {
 
     var n;
