@@ -407,7 +407,7 @@ function tp_unit_format(u, q, dec_pl) {
 
         for(i=n.length-1 ; i>=0 ; i--) {
 
-            if(i !=0 && inc % 3 == 0 && i != n.length-1) n_sep = tp_quantity_separator + n_sep;
+            if(inc % 3 == 0 && i != n.length-1) n_sep = tp_quantity_separator + n_sep;
             n_sep = n[i] + n_sep;
             inc++;
         }
