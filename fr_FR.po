@@ -63,7 +63,7 @@ msgstr "Votre participation a bien été enregistrée"
 #: traceparent.php:253 traceparent.php:254 traceparent.php:258
 #: traceparent.php:256
 msgid "please check your email for more details."
-msgstr "veuillez consulter votre messagerie pour d'avantage de détails."
+msgstr "veuillez consulter votre messagerie pour davantage de détails."
 
 #: traceparent.php:487 traceparent.php:493 traceparent.php:496
 #: traceparent.php:497 traceparent.php:498 traceparent.php:502
