@@ -88,7 +88,15 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
         $bootstrap = false;
         if($instance['bootstrap'] == 'on') $bootstrap = true;
 
+        $goodies_hidden = false;
+        if($instance['goodies_hidden'] == 'on') $goodies_hidden = true;
+
+        $quantities_hidden = false;
+        if($instance['quantities_hidden'] == 'on') $quantities_hidden = true;
+
         $pp_url        = $instance['pp_url'];
+        $pp_domain     = explode("/", $pp_url);
+        $pp_domain     = $pp_domain[2];
         $pp_auth_token = $instance['pp_auth_token'];
         $pp_email      = $instance['pp_email'];
         $pp_item_name  = $instance['pp_item_name'];
@@ -122,8 +130,7 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
         curl_setopt($ch, CURLOPT_CAINFO, __DIR__.'/cacert.pem');
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        //curl_setopt($ch, CURLOPT_HTTPHEADER, array("Host: $pp_url"));
-        //curl_setopt($ch, CURLOPT_HTTPHEADER, array("Host: www.sandbox.paypal.com"));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Host: $pp_domain"));
         $res = curl_exec($ch);
 
         $error_el = '<p class="tp_feedback tp_error">'.
@@ -340,9 +347,9 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
         <input type="hidden" name="item_name" value="<?php echo $pp_item_name ?>" />
         <input type="hidden" name="currency_code" value="" />
         <input type="hidden" name="custom" value="scope=<?php echo $tp_scope ?>" />
-        <div class="tp_goodies"></div>
+        <?php if(!$goodies_hidden) echo '<div class="tp_goodies"></div>'; echo "\n" ?>
         <input <?php if($bootstrap) echo 'class="btn" '; ?>type="submit" value="<?php echo $pp_button ?>" />
-        <div class="tp_quantities"></div>
+        <?php if(!$quantities_hidden) echo '<div class="tp_quantities"></div>'; echo "\n" ?>
     </form>
 
     <a class="tp_powered" href="http://traceparent.com/"><img src="<?php echo WP_PLUGIN_URL ?>/tp-wp-crowdfunding-widget/traceparent_logo.png"></a>
@@ -363,15 +370,22 @@ var tp_quantity_separator          = '<?php echo $tp_quantity_separator ?>';
 var tp_quantity_decimals_separator = '<?php echo $tp_quantity_decimals_separator ?>';
 var tp_counter                     = '<?php echo $tp_counter ?>';
 var tp_jurisdiction                = '<?php echo $tp_jurisdiction ?>';
+var goodies_hidden                 = <?php if($goodies_hidden) echo "true"; else echo "false" ?>;
+var quantities_hidden              = <?php if($quantities_hidden) echo "true"; else echo "false" ?>;
 
 if (tp_users == undefined) var tp_users = {};
 
 var $ = jQuery;
 
+/*
 // IE CORS doesn't like HTTP pages calling HTTPS resources.
 if(/msie/.test(navigator.userAgent.toLowerCase()) &&
    (''+document.location).indexOf('http://') == 0 &&
    tp_url.indexOf('https://') == 0) tp_url = 'http://' + tp_url.slice(8);
+*/
+
+// Some browsers can't handle some SSL certificates.
+if(tp_url.indexOf('https://') == 0) tp_url = 'http://' + tp_url.slice(8);
 
 </script>
 
@@ -416,7 +430,7 @@ function tp_unit_format(u, q, dec_pl) {
     }
 
     var r;
-    if(dec != null) r = n+tp_quantity_decimals_separator+dec;
+    if(dec != null && parseInt(dec)) r = n+tp_quantity_decimals_separator+dec;
     else r = n;
 
     var s;
@@ -478,7 +492,9 @@ $.getJSON(tp_url + "/value/unit/" + tp_unit + "/",
 
                                       function(sums) {
 
-                                          current = sums[0]['quantity'];
+                                          if(sums.length) current = sums[0]['quantity'];
+                                          else current = 0;
+
                                           var pc  = (current / max * 100);
 
                                           $('#' + tp_scope + ' .tp_mercury').width(pc + '%');
@@ -490,7 +506,7 @@ $.getJSON(tp_url + "/value/unit/" + tp_unit + "/",
                         }
               );
 
-              $.getJSON(tp_url + "/metadata/snippet/filter/",
+              if(!goodies_hidden) $.getJSON(tp_url + "/metadata/snippet/filter/",
                         {'assigned_counters': tp_counter,
                          'user': tp_auth_user, 'type_0': 'goody', 'type_1': 'exact',
                          'mimetype': 'application/json', 'content_nested': '',
@@ -545,7 +561,7 @@ $.getJSON(tp_url + "/value/unit/" + tp_unit + "/",
           }
 );
 
-$.getJSON(tp_url + "/value/quantity/filter/",
+if(!quantities_hidden) $.getJSON(tp_url + "/value/quantity/filter/",
           {'counters': tp_counter, 'status': 'present', 'page_size': 0},
 
           function(quantities) {
@@ -616,7 +632,7 @@ $.getJSON(tp_url + "/value/quantity/filter/",
 		$defaults = array('url' => 'http://sandbox.api.traceparent.com/0.1-beta', 'auth_token' => '', 'auth_user' => '',
                           'scope' => '', 'unit' => '122cc224-7572-11e2-adfe-78929c525f0e',
                           'quantity_decimals' => -1, 'quantity_separator' => ',', 'quantity_decimals_separator' => '.',
-                          'counter' => '', 'jurisdiction' => 'FR', 'bootstrap' => '', 'pp_url' => 'https://www.sandbox.paypal.com', 'pp_auth_token' => '',
+                          'counter' => '', 'jurisdiction' => 'FR', 'goodies_hidden' => '', 'quantities_hidden' => '', 'bootstrap' => '', 'pp_url' => 'https://www.sandbox.paypal.com', 'pp_auth_token' => '',
                           'pp_email' => '', 'email_content_append' => '', 'pp_item_name' => 'Donation', 'pp_button' => __('Donate!', 'traceparent'));
 		$instance = wp_parse_args((array) $instance, $defaults); ?>
 
@@ -678,6 +694,16 @@ $.getJSON(tp_url + "/value/quantity/filter/",
 		<p>
 			<label for="<?php echo $this->get_field_id('bootstrap'); ?>"><?php _e('bootstrap:', 'traceparent'); ?></label>
 			<input type="checkbox" id="<?php echo $this->get_field_id('bootstrap'); ?>" <?php if($instance['bootstrap'] == 'on') echo 'checked="checked" '; ?>name="<?php echo $this->get_field_name('bootstrap'); ?>" />
+		</p>
+
+		<p>
+			<label for="<?php echo $this->get_field_id('goodies_hidden'); ?>"><?php _e('goodies_hidden:', 'traceparent'); ?></label>
+			<input type="checkbox" id="<?php echo $this->get_field_id('goodies_hidden'); ?>" <?php if($instance['goodies_hidden'] == 'on') echo 'checked="checked" '; ?>name="<?php echo $this->get_field_name('goodies_hidden'); ?>" />
+		</p>
+
+		<p>
+			<label for="<?php echo $this->get_field_id('quantities_hidden'); ?>"><?php _e('quantities_hidden:', 'traceparent'); ?></label>
+			<input type="checkbox" id="<?php echo $this->get_field_id('quantities_hidden'); ?>" <?php if($instance['quantities_hidden'] == 'on') echo 'checked="checked" '; ?>name="<?php echo $this->get_field_name('quantities_hidden'); ?>" />
 		</p>
 
 		<p>
