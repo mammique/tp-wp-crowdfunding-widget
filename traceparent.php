@@ -97,7 +97,6 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
         $pp_url        = $instance['pp_url'];
         $pp_domain     = explode("/", $pp_url);
         $pp_domain     = $pp_domain[2];
-        $pp_auth_token = $instance['pp_auth_token'];
         $pp_email      = $instance['pp_email'];
         $pp_item_name  = $instance['pp_item_name'];
         $pp_button     = $instance['pp_button'];
@@ -113,222 +112,323 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
 
 <?php
 
-    if(rawurldecode($_GET['cm']) == "scope=$tp_scope") {
+// http://stackoverflow.com/a/834355
+function startsWith($haystack, $needle)
+{
+     $length = strlen($needle);
+     return (substr($haystack, 0, $length) === $needle);
+}
+function endsWith($haystack, $needle)
+{
+    $length = strlen($needle);
+    if ($length == 0) {
+        return true;
+    }
+    return (substr($haystack, -$length) === $needle);
+}
+/**
+ * http://www.paulund.co.uk/parse-url-querystring-into-array-in-php
+ * 
+ * Parse out url query string into an associative array
+ *
+ * $qry can be any valid url or just the query string portion.
+ * Will return false if no valid querystring found
+ *
+ * @param $qry String
+ * @return Array
+ */
+function query_dict($qry) {
+    $result = array();
+    //string must contain at least one = and cannot be in first position
+    if(strpos($qry,'=')) {
+     if(strpos($qry,'?')!==false) {
+       $q = parse_url($qry);
+       $qry = $q['query'];
+      }
+    } else {
+            return false;
+    }
+    foreach (explode('&', $qry) as $couple) {
+            list ($key, $val) = explode('=', $couple);
+            $result[$key] = rawurldecode($val);
+    }
+    return empty($result) ? false : $result;
+}
+/*
+ *
+ * Paypal IPN.
+ * 
+ * https://github.com/paypal/ipn-code-samples/blob/master/paypal_ipn.php
+ * 
+ */
+$raw_post_data = file_get_contents('php://input');
+$raw_post_array = explode('&', $raw_post_data);
+$post = array();
+foreach ($raw_post_array as $keyval) {
+	$keyval = explode ('=', $keyval);
+	if (count($keyval) >= 2) // implode again because "=" it's not always correctly encoded.
+		$post[$keyval[0]] = urldecode(implode('=', array_slice($keyval, 1)));
+}
 
-        require_once 'vendor/autoload.php';
+$pp_query = array_key_exists('custom', $post) ? query_dict(rawurldecode($post['custom'])) : null;
 
-        $pp_result = array();
-        $req = 'cmd=_notify-synch';
-        $tx_token = $_GET['tx'];
-        $req .= "&tx=$tx_token&at=$pp_auth_token";
+$tp_scope_target = $pp_query && array_key_exists('scope', $pp_query) ? $pp_query['scope'] : null;
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "$pp_url/cgi-bin/webscr");
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
-        curl_setopt($ch, CURLOPT_CAINFO, __DIR__.'/cacert.pem');
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Host: $pp_domain"));
-        $res = curl_exec($ch);
+if($tp_scope_target) {
 
-        $error_el = '<p class="tp_feedback tp_error">'.
-                    __("Something went wrong, our staff is working on it, sorry for the inconvenience.", 'traceparent').
-                    '</p>';
+//    preg_match("/[\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{12}/", $tp_scope, $matches);
+//    if(!$matches) $tp_scope_target = null;
+    if($tp_scope_target != $tp_scope) $tp_scope_target = null;
+}
 
-        if(!$res) {
+$pp_res = null;
 
-            echo $error_el;
+if($tp_scope_target) {
 
-            wp_mail(get_option('admin_email'),
-                    '['.get_bloginfo('name').'] Error report',
-                    'curl_error: '.curl_error($ch)."\n\nreq: ".$req."\n\nres: ".$res);
-
-            curl_close($ch);
-
+    $req = 'cmd=_notify-validate';
+    if(function_exists('get_magic_quotes_gpc')) {
+        $get_magic_quotes_exists = true;
+    }
+    foreach ($post as $key => $value) {
+        if($get_magic_quotes_exists == true && get_magic_quotes_gpc() == 1) {
+            $value = urlencode(stripslashes($value));
         } else {
+            $value = urlencode($value);
+        }
+        $req .= "&$key=$value";
+    }
 
-            curl_close($ch);
+    // Post IPN data back to PayPal to validate the IPN data is genuine
+    // Without this step anyone can fake IPN data
+    $ch = curl_init("$pp_url/cgi-bin/webscr");
+    if ($ch == FALSE) {
+        return FALSE;
+    }
 
-            // parse the data
-            $lines = explode("\n", $res);
+    curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
+    curl_setopt($ch, CURLOPT_CAINFO, __DIR__.'/cacert.pem');
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+    curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
+    curl_setopt($ch, CURLOPT_HEADER, 1);
+    curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
 
-            if (strcmp($lines[0], "SUCCESS") == 0) {
+    // Set TCP timeout to 30 seconds
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Connection: Close'));
+    $pp_res = curl_exec($ch);
+    if (curl_errno($ch) != 0) { // cURL error
+        $txt = date('[Y-m-d H:i e] '). "Can't connect to PayPal to validate IPN message: " . curl_error($ch);
+        wp_mail(get_option('admin_email'), '['.get_bloginfo('name').'] Error report', $txt);
+        curl_close($ch);
+        $pp_res = null;
+    }
+}
 
-                for ($i = 1 ; $i < count($lines) ; $i++){
+$pp_ok = false;
 
-                    if(strlen($lines[$i])) {
+if($pp_res) {
+    list($headers, $pp_res) = explode("\r\n\r\n", $pp_res, 2);
+    curl_close($ch);
 
-                        list($key, $val) = explode("=", $lines[$i]);
-                        $pp_result[urldecode($key)] = urldecode($val);
-                    }
-                }
+    // Inspect IPN validation result and act accordingly
+    if (!endsWith($pp_res, "VERIFIED")) {
+        // log for manual investigation
+        // Add business logic here which deals with invalid IPN messages
+        $txt = date('[Y-m-d H:i e] '). "Invalid IPN: $req";
+        wp_mail(get_option('admin_email'), '['.get_bloginfo('name').'] Error report', $txt);
+        $pp_res = null;
+    } else $pp_ok = true;
+}
 
-                global $tp_client;
-                $tp_client = new Guzzle\Http\Client($tp_url,
-                                 array('curl.options' => array(
-                                    CURLOPT_HTTPHEADER => array(
-                                        "Authorization: Token $tp_auth_token"))));
+if($pp_ok) {
 
-                $pp_id = $pp_result['txn_id'];
+    require_once 'vendor/autoload.php';
 
-                $request = $tp_client->get("value/unit/$tp_unit/");
-                $unit = $request->send()->json();
+    global $tp_client;
 
-                $request = $tp_client->get('metadata/snippet/filter/');
-                $request->getQuery()->set('slug_0', "paypal_pdt_$pp_id");
-                $request->getQuery()->set('slug_1', 'exact');
-                $request->getQuery()->set('page_size', '0');
-                $metadata_prev = $request->send()->json();
+    $tp_client = new Guzzle\Http\Client($tp_url,
+                     array('curl.options' => array(
+                        CURLOPT_HTTPHEADER => array(
+                            "Authorization: Token $tp_auth_token"))));
 
-                if($pp_result['receiver_email'] != $pp_email) {
+    $pp_id = $post['txn_id'];
 
-                    echo '<p class="tp_feedback tp_error">'.
-                         __("receiver email address mismatch.", 'traceparent').
-                         '</p>';
+    $request = $tp_client->get("value/unit/$tp_unit/");
+    $unit = $request->send()->json();
 
-                } else if($pp_result['mc_currency'] != $unit['slug']) {
+    $request = $tp_client->get('metadata/snippet/filter/');
+    $request->getQuery()->set('slug_0', "paypal_pdt_$pp_id");
+    $request->getQuery()->set('slug_1', 'exact');
+    $request->getQuery()->set('page_size', '0');
+    $metadata_prev = $request->send()->json();
 
-                    echo '<p class="tp_feedback tp_error">'.
-                         __("currency mismatch.", 'traceparent').
-                         '</p>';
+    if($post['receiver_email'] != $pp_email) {
 
-                } else if(count($metadata_prev)) {
+        wp_mail(get_option('admin_email'), '['.get_bloginfo('name').'] Error report', "receiver email address mismatch: $req");
+/*        echo '<p class="tp_feedback tp_error">'.
+             __("receiver email address mismatch.", 'traceparent').
+             '</p>'; */
 
-                    echo '<p class="tp_feedback tp_error">'.
-                         __("Transaction already registered.", 'traceparent').
-                         '</p>';
-                    echo '<script type="text/javascript">document.location="./";</script>';
+    } else if($post['mc_currency'] != $unit['slug']) {
 
-                } else { // If not already registered.
-                               
-                    function get_or_create_user($email, $name='', $details=false) {
+        wp_mail(get_option('admin_email'), '['.get_bloginfo('name').'] Error report', "currency mismatch: $req");
+/*        echo '<p class="tp_feedback tp_error">'.
+             __("currency mismatch.", 'traceparent').
+             '</p>'; */
 
-                        global $tp_client;
+    } else if(count($metadata_prev)) {
 
-                        $request = $tp_client->get('auth/user/filter/');
-                        $request->getQuery()->set('email', $email);
-                        $request->getQuery()->set('page_size', 1);
+        wp_mail(get_option('admin_email'), '['.get_bloginfo('name').'] Error report', "Transaction already registered: $req");
+/*        echo '<p class="tp_feedback tp_error">'.
+             __("Transaction already registered.", 'traceparent').
+             '</p>';
+        echo '<script type="text/javascript">document.location="./";</script>'; */
 
-                        $response = $request->send();
-                        $data = $response->json();
+    } else { // If not already registered.
 
-                        if(count($data['results'])) {
+        function get_or_create_user($email, $name='', $details=false) {
 
-                            if(!$details) return $data['results'][0];
-                            else return $tp_client->get('auth/user/'.$data['results'][0]['uuid'].'/')->send()->json();
-                        }
+            global $tp_client;
 
-                        $request = $tp_client->post('auth/user/create/')
-                                       ->addPostFields(array('email'    => $email,
-                                                             'name'     => $name,
-                                                             'password' => ''));
-                        return $request->send()->json();
-                    }
+            $request = $tp_client->get('auth/user/filter/');
+            $request->getQuery()->set('email', $email);
+            $request->getQuery()->set('page_size', 1);
 
-                    $user = get_or_create_user($pp_result['payer_email'], $pp_result['first_name'].' '.$pp_result['last_name']);
+            $response = $request->send();
+            $data = $response->json();
 
-                    $request = $tp_client->post('value/quantity/create/')
-                                   ->addPostFields(array('unit'            => $tp_unit,
-                                                         'quantity'        => $pp_result['mc_gross'],
-                                                         'user'            => $user['uuid'],
-                                                         'user_visibility' => 'public',
-                                                         'status'          => 'present'));
-                    $quantity = $request->send()->json();
+            if(count($data['results'])) {
 
-                    $request = $tp_client->post('metadata/snippet/create/')
-                                   ->addPostFields(array('user'                => $tp_auth_user,
-                                                         'visibility'          => 'private',
-                                                         'mimetype'            => 'application/json',
-                                                         'slug'                => "paypal_pdt_$pp_id",
-                                                         'type'                => 'paypal_pdt',
-                                                         'assigned_quantities' => $quantity['uuid'],
-                                                         'content'             => json_encode($pp_result)));
-                    $metadata = $request->send()->json();
+                if(!$details) return $data['results'][0];
+                else return $tp_client->get('auth/user/'.$data['results'][0]['uuid'].'/')->send()->json();
+            }
 
-                    $request = $tp_client->post("monitor/scope/$tp_scope/update/quantities/add/")
-                                   ->addPostFields(array('uuid' => $quantity['uuid']))->send();
+            $request = $tp_client->post('auth/user/create/')
+                           ->addPostFields(array('email'    => $email,
+                                                 'name'     => $name,
+                                                 'password' => ''));
+            return $request->send()->json();
+        }
 
-                    
-                    if($email_content_append != '') $mail_append = "\n\n".$email_content_append;
-                    else $mail_append = '';
+        $user = get_or_create_user($post['payer_email'], $post['first_name'].' '.$post['last_name']);
 
-                    wp_mail($pp_result['payer_email'],
+        $request = $tp_client->post('value/quantity/create/')
+                       ->addPostFields(array('unit'            => $tp_unit,
+                                             'quantity'        => $post['mc_gross'],
+                                             'user'            => $user['uuid'],
+                                             'user_visibility' => 'public',
+                                             'status'          => 'present'));
+        $quantity = $request->send()->json();
 
-                            '['.get_bloginfo('name').'] '.__('Thank you for your participation!', 'traceparent'),
+        $post_utf8 = [];
+        foreach ($post as $key => $value) {
+//			$post_utf8[$key] = iconv('UTF-8//TRANSLIT', $post['charset'], $value);
+			$post_utf8[$key] = utf8_encode($value);
+        }
 
-                            __("Hello", 'traceparent').' '.$user['name'].", ".
-                            __("thank you for your participation to our project!", 'traceparent').
-                            "\n\n".
-                            __("You can check information about your payment on your PayPal account at https://paypal.com/", 'traceparent').
-                            "\n\n".
-                            __("Tracability and transparency about the use of your money is monitored ".
-                               "by the free and Open Source software Traceparent (http://traceparent.com/) ".
-                               "that is running the funding gauge on our website.", 'traceparent').
-                            "\n\n".
-                            sprintf(
-                                __("Your profile information is managed by Gravatar, ".
-                                   'if you want to set your avatar up, please set it using this very same email (%1$s) '.
-                                   "at http://gravatar.com/", 'traceparent'),
-                                $pp_result['payer_email']).
-                            $mail_append.
-                            "\n\n".
-                            __("Best regards,", 'traceparent').
-                            "\n\n".
-                            get_bloginfo('name').'.');
+        $request = $tp_client->post('metadata/snippet/create/')
+                       ->addPostFields(array('user'                => $tp_auth_user,
+                                             'visibility'          => 'private',
+                                             'mimetype'            => 'application/json',
+                                             'slug'                => "paypal_pdt_$pp_id",
+                                             'type'                => 'paypal_pdt',
+                                             'assigned_quantities' => $quantity['uuid'],
+                                             'content'             => json_encode($post_utf8)));
+        $metadata = $request->send()->json();
 
-                    echo '<p class="tp_feedback">'.__("Thank you!", 'traceparent').
-                         '<small>'.
-                         __("Your participation has been succesfuly registered", 'traceparent').
-                         ', '.
-                         __("please check your email for more details.", 'traceparent').
-                         '</small></p>';
+        $request = $tp_client->post("monitor/scope/$tp_scope/update/quantities/add/")
+                       ->addPostFields(array('uuid' => $quantity['uuid']))->send();
+        
+        if($email_content_append != '') $mail_append = "\n\n".$email_content_append;
+        else $mail_append = '';
 
-                    $request = $tp_client->get("metadata/snippet/filter/");
-                    $request->getQuery()->set('assigned_counters', $tp_counter);
-                    $request->getQuery()->set('user', $tp_auth_user);
-                    $request->getQuery()->set('type_0', 'goody');
-                    $request->getQuery()->set('type_1', 'exact');
-                    $request->getQuery()->set('mimetype', 'application/json');
-                    $request->getQuery()->set('content_nested', '');
-                    $request->getQuery()->set('page_size', 0);
+        wp_mail($post['payer_email'],
 
-                    $goodies = $request->send()->json();
-                    $goodict = array();
+                '['.get_bloginfo('name').'] '.__('Thank you for your participation!', 'traceparent'),
 
-                    for ($i = 0 ; $i < count($goodies) ; $i++) {
+                __("Hello", 'traceparent').' '.$user['name'].", ".
+                __("thank you for your participation to our project!", 'traceparent').
+                "\n\n".
+                __("You can check information about your payment on your PayPal account at https://paypal.com/", 'traceparent').
+                "\n\n".
+                __("Tracability and transparency about the use of your money is monitored ".
+                   "by the free and Open Source software Traceparent (http://traceparent.com/) ".
+                   "that is running the funding gauge on our website.", 'traceparent').
+                "\n\n".
+                sprintf(
+                    __("Your profile information is managed by Gravatar, ".
+                       'if you want to set your avatar up, please set it using this very same email (%1$s) '.
+                       "at http://gravatar.com/", 'traceparent'),
+                    $post['payer_email']).
+                $mail_append.
+                "\n\n".
+                __("Best regards,", 'traceparent').
+                "\n\n".
+                get_bloginfo('name').'.');
 
-                        $goody = $goodies[$i];
-                        $goody['content'] = json_decode($goody['content'], true);
-                        $goodict[$goody['content']['q_range'][$unit['uuid']][0]] = $goody;
-                    }
+        echo '<p class="tp_feedback">'.__("Thank you!", 'traceparent').
+             '<small>'.
+             __("Your participation has been succesfuly registered", 'traceparent').
+             ', '.
+             __("please check your email for more details.", 'traceparent').
+             '</small></p>';
 
-                    krsort($goodict);
+        $request = $tp_client->get("metadata/snippet/filter/");
+        $request->getQuery()->set('assigned_counters', $tp_counter);
+        $request->getQuery()->set('user', $tp_auth_user);
+        $request->getQuery()->set('type_0', 'goody');
+        $request->getQuery()->set('type_1', 'exact');
+        $request->getQuery()->set('mimetype', 'application/json');
+        $request->getQuery()->set('content_nested', '');
+        $request->getQuery()->set('page_size', 0);
 
-                    foreach($goodict as $q => $goody) {
+        $goodies = $request->send()->json();
+        $goodict = array();
 
-                        if(floatval($quantity['quantity']) >= floatval($q)) {
+        for ($i = 0 ; $i < count($goodies) ; $i++) {
 
-                            $goody_uuid = $goody['uuid'];
-                            $tp_client->post("metadata/snippet/$goody_uuid/update/assigned_quantities/add/")
-                                ->addPostFields(array('uuid' => $quantity['uuid']))->send();
+            $goody = $goodies[$i];
+            $goody['content'] = json_decode($goody['content'], true);
+            $goodict[$goody['content']['q_range'][$unit['uuid']][0]] = $goody;
+        }
 
-                            break;
-                        }
-                    }
-                }
+        krsort($goodict);
 
-            } else { // if (strcmp ($lines[0], "FAIL") == 0) {
+        foreach($goodict as $q => $goody) {
 
-                echo $error_el;
+            if(floatval($quantity['quantity']) >= floatval($q)) {
 
-                wp_mail(get_option('admin_email'),
-                        '['.get_bloginfo('name').'] Error report',
-                        "req: ".$req."\n\nres: ".$res);
+                $goody_uuid = $goody['uuid'];
+                $tp_client->post("metadata/snippet/$goody_uuid/update/assigned_quantities/add/")
+                    ->addPostFields(array('uuid' => $quantity['uuid']))->send();
+
+                break;
             }
         }
     }
+}
+
+// http://stackoverflow.com/a/8891890
+function url_origin($s, $use_forwarded_host=false)
+{
+    $ssl = (!empty($s['HTTPS']) && $s['HTTPS'] == 'on') ? true:false;
+    $sp = strtolower($s['SERVER_PROTOCOL']);
+    $protocol = substr($sp, 0, strpos($sp, '/')) . (($ssl) ? 's' : '');
+    $port = $s['SERVER_PORT'];
+    $port = ((!$ssl && $port=='80') || ($ssl && $port=='443')) ? '' : ':'.$port;
+    $host = ($use_forwarded_host && isset($s['HTTP_X_FORWARDED_HOST'])) ? $s['HTTP_X_FORWARDED_HOST'] : (isset($s['HTTP_HOST']) ? $s['HTTP_HOST'] : null);
+    $host = isset($host) ? $host : $s['SERVER_NAME'] . $port;
+    return $protocol . '://' . $host;
+}
+function full_url($s, $use_forwarded_host=false)
+{
+    return url_origin($s, $use_forwarded_host) . $s['REQUEST_URI'];
+}
+
 ?>
 
     <div class="tp_info">
@@ -341,12 +441,13 @@ class Traceparent_Crowdfunding_Widget extends WP_Widget {
 
     <div class="<?php if($bootstrap) echo "progress progress-striped active "; ?>tp_gauge"><div class="<?php if($bootstrap) echo "bar "; ?>tp_mercury"><span class="tp_pc"></span></div></div>
 
-    <form class="tp_post" action="<?php echo $pp_url ?>/cgi-bin/webscr" method="post" style="display: none;">
+    <form class="tp_post" action="<?php echo $pp_url ?>/cgi-bin/webscr" method="post" target="_blank" style="display: none;">
         <input type="hidden" name="business" value="<?php echo $pp_email ?>" />
         <input type="hidden" name="cmd" value="_donations" />
         <input type="hidden" name="item_name" value="<?php echo $pp_item_name ?>" />
         <input type="hidden" name="currency_code" value="" />
         <input type="hidden" name="custom" value="scope=<?php echo $tp_scope ?>" />
+        <input type="hidden" name="notify_url" value="<?php echo full_url($_SERVER); ?>">
         <?php if(!$goodies_hidden) echo '<div class="tp_goodies"></div>'; echo "\n" ?>
         <input <?php if($bootstrap) echo 'class="btn" '; ?>type="submit" value="<?php echo $pp_button ?>" />
         <?php if(!$quantities_hidden) echo '<div class="tp_quantities"></div>'; echo "\n" ?>
@@ -561,14 +662,14 @@ $.getJSON(tp_url + "/value/unit/" + tp_unit + "/",
           }
 );
 
-if(!quantities_hidden) $.getJSON(tp_url + "/value/quantity/filter/",
+$.getJSON(tp_url + "/value/quantity/filter/",
           {'counters': tp_counter, 'status': 'present', 'page_size': 0},
 
           function(quantities) {
 
               $('#' + tp_scope + ' .tp_quantities_number').text(''+quantities.length);
 
-              $(quantities).each(function(k, q) {
+              if(!quantities_hidden) $(quantities).each(function(k, q) {
 
                   var img = $('<img src="http://www.gravatar.com/avatar/none?s=32" title="' + tp_unit_format(tp_unit, q['quantity']) + '" />');
 
@@ -632,7 +733,7 @@ if(!quantities_hidden) $.getJSON(tp_url + "/value/quantity/filter/",
 		$defaults = array('url' => 'http://sandbox.api.traceparent.com/0.1-beta', 'auth_token' => '', 'auth_user' => '',
                           'scope' => '', 'unit' => '122cc224-7572-11e2-adfe-78929c525f0e',
                           'quantity_decimals' => -1, 'quantity_separator' => ',', 'quantity_decimals_separator' => '.',
-                          'counter' => '', 'jurisdiction' => 'FR', 'goodies_hidden' => '', 'quantities_hidden' => '', 'bootstrap' => '', 'pp_url' => 'https://www.sandbox.paypal.com', 'pp_auth_token' => '',
+                          'counter' => '', 'jurisdiction' => 'FR', 'goodies_hidden' => '', 'quantities_hidden' => '', 'bootstrap' => '', 'pp_url' => 'https://www.sandbox.paypal.com',
                           'pp_email' => '', 'email_content_append' => '', 'pp_item_name' => 'Donation', 'pp_button' => __('Donate!', 'traceparent'));
 		$instance = wp_parse_args((array) $instance, $defaults); ?>
 
@@ -709,11 +810,6 @@ if(!quantities_hidden) $.getJSON(tp_url + "/value/quantity/filter/",
 		<p>
 			<label for="<?php echo $this->get_field_id('pp_url'); ?>"><?php _e('pp_url:', 'traceparent'); ?></label>
 			<input id="<?php echo $this->get_field_id('pp_url'); ?>" name="<?php echo $this->get_field_name('pp_url'); ?>" value="<?php echo $instance['pp_url']; ?>" style="width: 100%;" />
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id('pp_auth_token'); ?>"><?php _e('pp_auth_token:', 'traceparent'); ?></label>
-			<input id="<?php echo $this->get_field_id('pp_auth_token'); ?>" name="<?php echo $this->get_field_name('pp_auth_token'); ?>" value="<?php echo $instance['pp_auth_token']; ?>" style="width: 100%;" />
 		</p>
 
 		<p>
